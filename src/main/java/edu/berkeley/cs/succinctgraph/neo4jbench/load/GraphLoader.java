@@ -2,7 +2,6 @@ package edu.berkeley.cs.succinctgraph.neo4jbench.load;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import org.neo4j.graphdb.index.Index;
 
 import java.io.BufferedReader;
@@ -49,9 +48,7 @@ public class GraphLoader {
     LOG.info("Data path = " + dbPath);
 
     LOG.info("Initializing tuned database...");
-    db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
-      .setConfig(GraphDatabaseSettings.cache_type, "none")
-      .newGraphDatabase();
+    db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath).newGraphDatabase();
     LOG.info("Completed initializing tuned database.");
 
     LOG.info("Database initialization: " + db.toString());
