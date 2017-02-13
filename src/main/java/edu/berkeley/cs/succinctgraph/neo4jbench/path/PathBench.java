@@ -30,6 +30,7 @@ public class PathBench {
     boolean tuned = Boolean.valueOf(args[7]);
     String neo4jPageCacheMemory = args[8];
 
+    queries = new ArrayList<>();
     BenchUtils.readPathQueries(queryFile, queries);
 
     switch (type) {

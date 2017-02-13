@@ -89,6 +89,8 @@ public class BenchUtils {
 
   public static void readPathQueries(String file, List<String> queries) {
 
+    System.out.println("Reading path queries from file " + file);
+
     try {
       BufferedReader br = new BufferedReader(new FileReader(file));
       String line = br.readLine();
