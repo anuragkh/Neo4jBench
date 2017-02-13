@@ -16,29 +16,34 @@ import java.util.Random;
 import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
 
 public class PathBench {
+  static String outputFile;
+  static String dbPath;
   static int numWarmupQueries, numMeasureQueries;
+  static int numClients;
+  static boolean tuned;
+  static String pageCache;
   static List<String> queries;
 
   public static void main(String[] args) {
     String type = args[0];
-    String dbPath = args[1];
+    dbPath = args[1];
     String queryFile = args[2];
-    String outputFile = args[3];
+    outputFile = args[3];
     numWarmupQueries = Integer.parseInt(args[4]);
     numMeasureQueries = Integer.parseInt(args[5]);
-    int numClients = Integer.parseInt(args[6]);
-    boolean tuned = Boolean.valueOf(args[7]);
-    String neo4jPageCacheMemory = args[8];
+    numClients = Integer.parseInt(args[6]);
+    tuned = Boolean.valueOf(args[7]);
+    pageCache = args[8];
 
     queries = new ArrayList<>();
     BenchUtils.readPathQueries(queryFile, queries);
 
     switch (type) {
       case "latency":
-        benchtLatency(dbPath, neo4jPageCacheMemory, outputFile);
+        benchLatency();
         break;
       case "throughput":
-        benchThroughput(tuned, dbPath, neo4jPageCacheMemory, numClients);
+        benchThroughput();
         break;
       default:
         System.err.println("Unknown type: " + type);
@@ -46,23 +51,26 @@ public class PathBench {
     }
   }
 
-  private static void benchtLatency(String dbPath, String neo4jPageCacheMem, String outputFile) {
+  private static void benchLatency() {
 
-    System.out.println("Benchmarking assoc_get() queries");
-    System.out.println("Setting Neo4j's dbms.pagecache.memory: " + neo4jPageCacheMem);
+    System.out.println("Benchmarking latency for path queries");
+    System.out.println("Setting Neo4j's dbms.pagecache.memory: " + pageCache);
 
-    GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
-      .setConfig(GraphDatabaseSettings.cache_type, "none")
-      .setConfig(GraphDatabaseSettings.pagecache_memory, neo4jPageCacheMem).newGraphDatabase();
+    GraphDatabaseService db;
+    System.out.println("About to open database");
+    if (tuned) {
+      db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
+        .setConfig(GraphDatabaseSettings.cache_type, "none")
+        .setConfig(GraphDatabaseSettings.pagecache_memory, pageCache).newGraphDatabase();
+    } else {
+      db = new GraphDatabaseFactory().newEmbeddedDatabase(dbPath);
+    }
+    System.out.println("Done opening");
 
     BenchUtils.registerShutdownHook(db);
     Transaction tx = db.beginTx();
     try {
       PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
-      PrintWriter resOut = null;
-      if (System.getenv("BENCH_PRINT_RESULTS") != null) {
-        resOut = new PrintWriter(new BufferedWriter(new FileWriter(outputFile + ".neo4j_result")));
-      }
 
       System.out.println("Warming up for " + numWarmupQueries + " queries");
       for (int i = 0; i < numWarmupQueries; ++i) {
@@ -88,11 +96,6 @@ public class PathBench {
         out.println(count + "\t" + microsecs);
       }
       out.close();
-      if (resOut != null) {
-        resOut.flush();
-        resOut.close();
-      }
-
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
@@ -103,15 +106,17 @@ public class PathBench {
     }
   }
 
-  private static void benchThroughput(boolean tuned, String dbPath, String neo4jPageCacheMem,
-    int numClients) {
+  private static void benchThroughput() {
+
+    System.out.println("Benchmarking throughput for path queries");
+    System.out.println("Setting Neo4j's dbms.pagecache.memory: " + pageCache);
 
     GraphDatabaseService graphDb;
     System.out.println("About to open database");
     if (tuned) {
       graphDb = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
         .setConfig(GraphDatabaseSettings.cache_type, "none")
-        .setConfig(GraphDatabaseSettings.pagecache_memory, neo4jPageCacheMem).newGraphDatabase();
+        .setConfig(GraphDatabaseSettings.pagecache_memory, pageCache).newGraphDatabase();
     } else {
       graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbPath);
     }
@@ -168,8 +173,7 @@ public class PathBench {
       Random rand = new Random(1618 + clientId);
       try {
         // true for append
-        out = new PrintWriter(
-          new BufferedWriter(new FileWriter("neo4j_throughput_assoc_get.txt", true)));
+        out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
 
         // warmup
         int i = 0;
