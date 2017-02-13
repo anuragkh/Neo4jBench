@@ -188,7 +188,7 @@ public class TAOImpls implements TAOIface {
     Node n = db.getNodeById(src);
     Iterable<Relationship> rels = n.getRelationships(atypeMap[(int) atype], Direction.OUTGOING);
     long count = 0;
-    for (Relationship _ : rels) {
+    for (Relationship ignored : rels) {
       ++count;
     }
     return count;
