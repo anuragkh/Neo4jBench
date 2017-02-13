@@ -14,7 +14,10 @@ public class GraphLoader {
 
   private static GraphDatabaseService db = null;
   private static Index<Node> idIndex = null;
+  private static int entryCount = 0;
+
   private static final Logger LOG = Logger.getLogger("GraphLoader");
+  private static final int TX_COUNT = 1000;
 
   public static void main(String[] args) throws Exception {
     if (args.length != 2) {
@@ -74,6 +77,8 @@ public class GraphLoader {
     RelationshipType relType = DynamicRelationshipType.withName(String.valueOf(edgeLabel));
     Relationship rel = srcNode.createRelationshipTo(dstNode, relType);
     rel.setProperty("time", System.currentTimeMillis());
+
+    entryCount++;
   }
 
   public static void bulkLoad(String file) {
@@ -86,8 +91,12 @@ public class GraphLoader {
         int edgeType = Integer.valueOf(terms[1]);
         int dst = Integer.valueOf(terms[2]);
         add(src, edgeType, dst);
+        if (entryCount % TX_COUNT == 0) {
+          System.out.println("Processed " + entryCount + " entries...");
+          tx.success();
+          tx = db.beginTx();
+        }
       }
-      tx.success();
     } catch (Exception e) {
       e.printStackTrace();
       tx.failure();
