@@ -17,6 +17,11 @@ public class GraphLoader {
   private static final Logger LOG = Logger.getLogger("GraphLoader");
 
   public static void main(String[] args) throws Exception {
+    if (args.length != 2) {
+      System.err.println("Usage: loader [output] [input]");
+      return;
+    }
+
     String dbPath = args[0];
     String input = args[1];
 
