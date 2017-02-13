@@ -63,7 +63,8 @@ public class GraphLoader {
     dstNode.setProperty("id", dst);
     idIndex.add(dstNode, "id", dst);
 
-    RelationshipType relType = DynamicRelationshipType.withName(String.valueOf(edgeLabel));
+    String edgeLabelStr = "p" + edgeLabel;
+    RelationshipType relType = DynamicRelationshipType.withName(edgeLabelStr);
     Relationship rel = srcNode.createRelationshipTo(dstNode, relType);
     rel.setProperty("time", System.currentTimeMillis());
 
