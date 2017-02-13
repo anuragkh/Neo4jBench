@@ -48,7 +48,7 @@ public class GraphLoader {
     LOG.info("Data path = " + dbPath);
 
     LOG.info("Initializing tuned database...");
-    db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath).newGraphDatabase();
+    db = new GraphDatabaseFactory().newEmbeddedDatabase(dbPath);
     LOG.info("Completed initializing tuned database.");
 
     LOG.info("Database initialization: " + db.toString());
