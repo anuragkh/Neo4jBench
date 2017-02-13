@@ -32,14 +32,7 @@ public class GraphLoader {
 
     initialize(p);
     bulkLoad(input);
-  }
-
-  public static void registerShutdownHook(final GraphDatabaseService graphDb) {
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        graphDb.shutdown();
-      }
-    });
+    db.shutdown();
   }
 
   public static void initialize(Properties p) throws Exception {
@@ -52,7 +45,6 @@ public class GraphLoader {
     LOG.info("Completed initializing tuned database.");
 
     LOG.info("Database initialization: " + db.toString());
-    registerShutdownHook(db);
 
     LOG.info("Initializing ID index...");
     try (Transaction tx = db.beginTx()) {
