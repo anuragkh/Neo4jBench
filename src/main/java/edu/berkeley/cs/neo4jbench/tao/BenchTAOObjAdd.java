@@ -1,6 +1,6 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;

@@ -1,6 +1,7 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchConstants;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -12,9 +13,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.modGet;
 
 public class BenchTAOAssocCount {
 
@@ -85,7 +83,8 @@ public class BenchTAOAssocCount {
           tx = db.beginTx();
         }
         taoImpls
-          .assocCount(db, modGet(warmupAssocCountNodes, i), modGet(warmupAssocCountAtypes, i));
+          .assocCount(db, BenchUtils.modGet(warmupAssocCountNodes, i), BenchUtils
+            .modGet(warmupAssocCountAtypes, i));
       }
 
       System.out.println("Measuring for " + numMeasureQueries + " queries");
@@ -96,13 +95,15 @@ public class BenchTAOAssocCount {
           tx = db.beginTx();
         }
         long queryStart = System.nanoTime();
-        long cnt = taoImpls.assocCount(db, modGet(assocCountNodes, i), modGet(assocCountAtypes, i));
+        long cnt = taoImpls.assocCount(db, BenchUtils.modGet(assocCountNodes, i), BenchUtils
+          .modGet(assocCountAtypes, i));
         long queryEnd = System.nanoTime();
         double microsecs = (queryEnd - queryStart) / ((double) 1000);
         out.println(cnt + "," + microsecs);
 
         if (resOut != null) {
-          resOut.printf("%d %d %d\n", modGet(assocCountNodes, i), modGet(assocCountAtypes, i), cnt);
+          resOut.printf("%d %d %d\n", BenchUtils.modGet(assocCountNodes, i), BenchUtils
+            .modGet(assocCountAtypes, i), cnt);
         }
       }
       out.close();
@@ -202,7 +203,7 @@ public class BenchTAOAssocCount {
         // warmup
         int i = 0, queryIdx = 0;
         long warmupStart = System.nanoTime();
-        while (System.nanoTime() - warmupStart < WARMUP_TIME) {
+        while (System.nanoTime() - warmupStart < BenchConstants.WARMUP_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
@@ -210,7 +211,8 @@ public class BenchTAOAssocCount {
           }
           queryIdx = rand.nextInt(warmupNodes.size());
           taoImpls
-            .assocCount(graphDb, modGet(warmupNodes, queryIdx), modGet(warmupAtypes, queryIdx));
+            .assocCount(graphDb, BenchUtils.modGet(warmupNodes, queryIdx), BenchUtils
+              .modGet(warmupAtypes, queryIdx));
           ++i;
         }
 
@@ -219,7 +221,7 @@ public class BenchTAOAssocCount {
         long edges = 0;
         int querySize = nodes.size();
         long start = System.nanoTime();
-        while (System.nanoTime() - start < MEASURE_TIME) {
+        while (System.nanoTime() - start < BenchConstants.MEASURE_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
@@ -227,7 +229,8 @@ public class BenchTAOAssocCount {
           }
           queryIdx = rand.nextInt(querySize);
           long cnt =
-            taoImpls.assocCount(graphDb, modGet(nodes, queryIdx), modGet(atypes, queryIdx));
+            taoImpls.assocCount(graphDb, BenchUtils.modGet(nodes, queryIdx), BenchUtils
+              .modGet(atypes, queryIdx));
           edges += cnt;
           ++i;
         }
@@ -238,9 +241,10 @@ public class BenchTAOAssocCount {
 
         // cooldown
         long cooldownStart = System.nanoTime();
-        while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
+        while (System.nanoTime() - cooldownStart < BenchConstants.COOLDOWN_TIME) {
           queryIdx = rand.nextInt(querySize);
-          taoImpls.assocCount(graphDb, modGet(nodes, queryIdx), modGet(atypes, queryIdx));
+          taoImpls.assocCount(graphDb, BenchUtils.modGet(nodes, queryIdx), BenchUtils
+            .modGet(atypes, queryIdx));
           ++i;
         }
         out.printf("%.1f %.1f\n", queryThput, edgesThput);

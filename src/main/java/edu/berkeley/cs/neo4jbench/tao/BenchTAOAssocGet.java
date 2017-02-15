@@ -1,6 +1,6 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -12,30 +12,23 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.modGet;
+import static edu.berkeley.cs.neo4jbench.BenchConstants.*;
+import static edu.berkeley.cs.neo4jbench.BenchUtils.modGet;
 
-public class BenchTAOAssocRange {
+public class BenchTAOAssocGet {
 
   final static TAOImpls taoImpls = new TAOImpls();
 
   static int numWarmupQueries, numMeasureQueries;
-  static List<Long> warmupAssocRangeNodes, assocRangeNodes;
-  static List<Long> warmupAssocRangeAtypes, assocRangeAtypes;
-  static List<Integer> warmupAssocRangeOffsets, assocRangeOffsets;
-  static List<Integer> warmupAssocRangeLengths, assocRangeLengths;
+  static List<Long> warmupAssocGetNodes, assocGetNodes;
+  static List<Long> warmupAssocGetAtypes, assocGetAtypes;
+  static List<Set<Long>> warmupAssocGetDstIdSets, assocGetDstIdSets;
+  static List<Long> warmupAssocGetTimeLows, assocGetTimeLows;
+  static List<Long> warmupAssocGetTimeHighs, assocGetTimeHighs;
 
   public static void main(String[] args) {
-    warmupAssocRangeNodes = new ArrayList<>();
-    assocRangeNodes = new ArrayList<>();
-    warmupAssocRangeAtypes = new ArrayList<>();
-    assocRangeAtypes = new ArrayList<>();
-    warmupAssocRangeOffsets = new ArrayList<>();
-    assocRangeOffsets = new ArrayList<>();
-    warmupAssocRangeLengths = new ArrayList<>();
-    assocRangeLengths = new ArrayList<>();
-
     String type = args[0];
     String dbPath = args[1];
     String warmupQueryFile = args[2];
@@ -47,42 +40,46 @@ public class BenchTAOAssocRange {
     boolean tuned = Boolean.valueOf(args[8]);
     String neo4jPageCacheMemory = args[9];
 
+    warmupAssocGetNodes = new ArrayList<>();
+    assocGetNodes = new ArrayList<>();
+    warmupAssocGetAtypes = new ArrayList<>();
+    assocGetAtypes = new ArrayList<>();
+    warmupAssocGetDstIdSets = new ArrayList<>();
+    assocGetDstIdSets = new ArrayList<>();
+    warmupAssocGetTimeLows = new ArrayList<>();
+    assocGetTimeLows = new ArrayList<>();
+    warmupAssocGetTimeHighs = new ArrayList<>();
+    assocGetTimeHighs = new ArrayList<>();
 
-    BenchUtils.readAssocRangeQueries(warmupQueryFile, warmupAssocRangeNodes, warmupAssocRangeAtypes,
-      warmupAssocRangeOffsets, warmupAssocRangeLengths);
+    BenchUtils.readAssocGetQueries(warmupQueryFile, warmupAssocGetNodes, warmupAssocGetAtypes,
+      warmupAssocGetDstIdSets, warmupAssocGetTimeLows, warmupAssocGetTimeHighs);
 
-    BenchUtils
-      .readAssocRangeQueries(queryFile, assocRangeNodes, assocRangeAtypes, assocRangeOffsets,
-        assocRangeLengths);
+    BenchUtils.readAssocGetQueries(queryFile, assocGetNodes, assocGetAtypes, assocGetDstIdSets,
+      assocGetTimeLows, assocGetTimeHighs);
 
     if (type.equals("latency")) {
-      benchAssocRangeLatency(tuned, dbPath, neo4jPageCacheMemory, outputFile);
+      benchAssocGetLatency(dbPath, neo4jPageCacheMemory, outputFile);
     } else if (type.equals("throughput")) {
-      benchAssocRangeThroughput(tuned, dbPath, neo4jPageCacheMemory, numClients);
+      benchAssocGetThroughput(tuned, dbPath, neo4jPageCacheMemory, numClients);
     } else {
       System.err.println("Unknown type: " + type);
     }
   }
 
-  private static void benchAssocRangeLatency(boolean tuned, String dbPath, String neo4jPageCacheMem,
+  private static void benchAssocGetLatency(String dbPath, String neo4jPageCacheMem,
     String outputFile) {
 
-    System.out.println("Benchmarking assoc_range() queries");
+    System.out.println("Benchmarking assoc_get() queries");
     System.out.println("Setting Neo4j's dbms.pagecache.memory: " + neo4jPageCacheMem);
 
-    GraphDatabaseService db;
-    if (tuned) {
-      db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
-        .setConfig(GraphDatabaseSettings.cache_type, "none")
-        .setConfig(GraphDatabaseSettings.pagecache_memory, neo4jPageCacheMem).newGraphDatabase();
-    } else {
-      db = new GraphDatabaseFactory().newEmbeddedDatabase(dbPath);
-    }
+    GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
+      .setConfig(GraphDatabaseSettings.cache_type, "none")
+      .setConfig(GraphDatabaseSettings.pagecache_memory, neo4jPageCacheMem).newGraphDatabase();
 
     BenchUtils.registerShutdownHook(db);
     Transaction tx = db.beginTx();
     try {
-      // BenchUtils.fullWarmup(db);
+      BenchUtils.fullWarmup(db);
 
       PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
       PrintWriter resOut = null;
@@ -97,8 +94,9 @@ public class BenchTAOAssocRange {
           tx.close();
           tx = db.beginTx();
         }
-        taoImpls.assocRange(db, modGet(warmupAssocRangeNodes, i), modGet(warmupAssocRangeAtypes, i),
-          modGet(warmupAssocRangeOffsets, i), modGet(warmupAssocRangeLengths, i));
+        taoImpls.assocGet(db, modGet(warmupAssocGetNodes, i), modGet(warmupAssocGetAtypes, i),
+          modGet(warmupAssocGetDstIdSets, i), modGet(warmupAssocGetTimeLows, i),
+          modGet(warmupAssocGetTimeHighs, i));
       }
 
       System.out.println("Measuring for " + numMeasureQueries + " queries");
@@ -110,11 +108,10 @@ public class BenchTAOAssocRange {
         }
         long queryStart = System.nanoTime();
         List<Assoc> assocs = taoImpls
-          .assocRange(db, modGet(assocRangeNodes, i), modGet(assocRangeAtypes, i),
-            modGet(assocRangeOffsets, i), modGet(assocRangeLengths, i));
+          .assocGet(db, modGet(assocGetNodes, i), modGet(assocGetAtypes, i),
+            modGet(assocGetDstIdSets, i), modGet(assocGetTimeLows, i),
+            modGet(assocGetTimeHighs, i));
         long queryEnd = System.nanoTime();
-        assert (assocs.size() <= modGet(assocRangeLengths, i));
-        assert (!assocs.isEmpty()); // due to our query generation scheme
         double microsecs = (queryEnd - queryStart) / ((double) 1000);
         out.println(assocs.size() + "," + microsecs);
 
@@ -142,7 +139,7 @@ public class BenchTAOAssocRange {
     }
   }
 
-  private static void benchAssocRangeThroughput(boolean tuned, String dbPath,
+  private static void benchAssocGetThroughput(boolean tuned, String dbPath,
     String neo4jPageCacheMem, int numClients) {
 
     GraphDatabaseService graphDb;
@@ -174,9 +171,9 @@ public class BenchTAOAssocRange {
       List<Thread> clients = new ArrayList<>(numClients);
       for (int i = 0; i < numClients; ++i) {
         clients.add(new Thread(
-          new RunAssocRangeThroughput(i, warmupAssocRangeNodes, assocRangeNodes,
-            warmupAssocRangeAtypes, assocRangeAtypes, warmupAssocRangeOffsets, assocRangeOffsets,
-            warmupAssocRangeLengths, assocRangeLengths, graphDb)));
+          new RunAssocGetThroughput(i, warmupAssocGetNodes, assocGetNodes, warmupAssocGetAtypes,
+            assocGetAtypes, warmupAssocGetDstIdSets, assocGetDstIdSets, warmupAssocGetTimeHighs,
+            assocGetTimeHighs, warmupAssocGetTimeLows, assocGetTimeLows, graphDb)));
       }
       for (Thread thread : clients) {
         thread.start();
@@ -195,28 +192,31 @@ public class BenchTAOAssocRange {
   }
 
 
-  static class RunAssocRangeThroughput implements Runnable {
+  static class RunAssocGetThroughput implements Runnable {
     private int clientId;
     private List<Long> warmupNodes, nodes;
     private List<Long> warmupAtypes, atypes;
-    private List<Integer> warmupOffsets, offsets;
-    private List<Integer> warmupLengths, lengths;
+    private List<Set<Long>> warmupDstIdSets, dstIdSets;
+    private List<Long> warmupTimeHighs, timeHighs;
+    private List<Long> warmupTimeLows, timeLows;
     private GraphDatabaseService graphDb;
 
-    public RunAssocRangeThroughput(int clientId, List<Long> warmupNodes, List<Long> nodes,
-      List<Long> warmupAtypes, List<Long> atypes, List<Integer> warmupOffsets,
-      List<Integer> offsets, List<Integer> warmupLengths, List<Integer> lengths,
-      GraphDatabaseService graphDb) {
+    public RunAssocGetThroughput(int clientId, List<Long> warmupNodes, List<Long> nodes,
+      List<Long> warmupAtypes, List<Long> atypes, List<Set<Long>> warmupDstIdSets,
+      List<Set<Long>> dstIdSets, List<Long> warmupTimeHighs, List<Long> timeHighs,
+      List<Long> warmupTimeLows, List<Long> timeLows, GraphDatabaseService graphDb) {
 
       this.clientId = clientId;
       this.warmupNodes = warmupNodes;
       this.nodes = nodes;
       this.warmupAtypes = warmupAtypes;
       this.atypes = atypes;
-      this.warmupOffsets = warmupOffsets;
-      this.offsets = offsets;
-      this.warmupLengths = warmupLengths;
-      this.lengths = lengths;
+      this.warmupDstIdSets = warmupDstIdSets;
+      this.dstIdSets = dstIdSets;
+      this.warmupTimeHighs = warmupTimeHighs;
+      this.timeHighs = timeHighs;
+      this.warmupTimeLows = warmupTimeLows;
+      this.timeLows = timeLows;
       this.graphDb = graphDb;
     }
 
@@ -227,7 +227,7 @@ public class BenchTAOAssocRange {
       try {
         // true for append
         out = new PrintWriter(
-          new BufferedWriter(new FileWriter("neo4j_throughput_assoc_range.txt", true)));
+          new BufferedWriter(new FileWriter("neo4j_throughput_assoc_get.txt", true)));
 
         // warmup
         int i = 0, queryIdx = 0;
@@ -239,9 +239,9 @@ public class BenchTAOAssocRange {
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(warmupNodes.size());
-          taoImpls
-            .assocRange(graphDb, modGet(warmupNodes, queryIdx), modGet(warmupAtypes, queryIdx),
-              modGet(warmupOffsets, queryIdx), modGet(warmupLengths, queryIdx));
+          taoImpls.assocGet(graphDb, modGet(warmupNodes, queryIdx), modGet(warmupAtypes, queryIdx),
+            modGet(warmupDstIdSets, queryIdx), modGet(warmupTimeLows, queryIdx),
+            modGet(warmupTimeHighs, queryIdx));
           ++i;
         }
 
@@ -258,8 +258,8 @@ public class BenchTAOAssocRange {
           }
           queryIdx = rand.nextInt(querySize);
           List<Assoc> neighbors = taoImpls
-            .assocRange(graphDb, modGet(nodes, queryIdx), modGet(atypes, queryIdx),
-              modGet(offsets, queryIdx), modGet(lengths, queryIdx));
+            .assocGet(graphDb, modGet(nodes, queryIdx), modGet(atypes, queryIdx),
+              modGet(dstIdSets, queryIdx), modGet(timeLows, queryIdx), modGet(timeHighs, queryIdx));
           edges += neighbors.size();
           ++i;
         }
@@ -272,8 +272,8 @@ public class BenchTAOAssocRange {
         long cooldownStart = System.nanoTime();
         while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
           queryIdx = rand.nextInt(querySize);
-          taoImpls.assocRange(graphDb, modGet(nodes, queryIdx), modGet(atypes, queryIdx),
-            modGet(offsets, queryIdx), modGet(lengths, queryIdx));
+          taoImpls.assocGet(graphDb, modGet(nodes, queryIdx), modGet(atypes, queryIdx),
+            modGet(dstIdSets, queryIdx), modGet(timeLows, queryIdx), modGet(timeHighs, queryIdx));
           ++i;
         }
         out.printf("%.1f %.1f\n", queryThput, edgesThput);

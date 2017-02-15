@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
 import org.neo4j.graphdb.RelationshipType;
 

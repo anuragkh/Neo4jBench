@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.scratch;
+package edu.berkeley.cs.neo4jbench.scratch;
 
 import org.apache.lucene.store.FSDirectory;
 

@@ -1,6 +1,6 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench;
+package edu.berkeley.cs.neo4jbench;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.tao.AType;
+import edu.berkeley.cs.neo4jbench.tao.AType;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.*;
 
 public class BenchNeighborAtype {
 
@@ -239,7 +236,8 @@ public class BenchNeighborAtype {
           tx = graphDb.beginTx();
         }
 
-        getEdgeAttrs(graphDb, modGet(warmupIds, i), atypeMap[modGet(warmupAtypes, i).intValue()]);
+        getEdgeAttrs(graphDb, BenchUtils.modGet(warmupIds, i), atypeMap[BenchUtils
+          .modGet(warmupAtypes, i).intValue()]);
       }
 
       System.out.println("Measuring for " + MEASURE_N + " queries");
@@ -253,7 +251,8 @@ public class BenchNeighborAtype {
         long queryStart = System.nanoTime();
 
         attributes =
-          getEdgeAttrs(graphDb, modGet(warmupIds, i), atypeMap[modGet(warmupAtypes, i).intValue()]);
+          getEdgeAttrs(graphDb, BenchUtils.modGet(warmupIds, i), atypeMap[BenchUtils
+            .modGet(warmupAtypes, i).intValue()]);
 
         long queryEnd = System.nanoTime();
         double microsecs = (queryEnd - queryStart) / ((double) 1000);
@@ -289,17 +288,17 @@ public class BenchNeighborAtype {
     Node n = graphDb.getNodeById(id);
     Iterable<Relationship> rels = n.getRelationships(relType, Direction.OUTGOING);
 
-    List<TimestampedId> timestampedNhbrs = new ArrayList<TimestampedId>();
+    List<BenchUtils.TimestampedId> timestampedNhbrs = new ArrayList<BenchUtils.TimestampedId>();
     long timestamp, nhbrId;
     for (Relationship r : rels) {
       timestamp = (long) (r.getProperty("timestamp"));
       nhbrId = r.getOtherNode(n).getId();
-      timestampedNhbrs.add(new TimestampedId(timestamp, nhbrId));
+      timestampedNhbrs.add(new BenchUtils.TimestampedId(timestamp, nhbrId));
     }
 
     List<Long> neighbors = new ArrayList<Long>(timestampedNhbrs.size());
     Collections.sort(timestampedNhbrs);
-    for (TimestampedId timestampedId : timestampedNhbrs) {
+    for (BenchUtils.TimestampedId timestampedId : timestampedNhbrs) {
       neighbors.add(timestampedId.id);
     }
     return neighbors;
@@ -310,17 +309,17 @@ public class BenchNeighborAtype {
     Node n = graphDb.getNodeById(id);
     Iterable<Relationship> rels = n.getRelationships(relType, Direction.OUTGOING);
 
-    List<TimestampedAttr> timestampedAttrs = new ArrayList<>();
+    List<BenchUtils.TimestampedAttr> timestampedAttrs = new ArrayList<>();
     long timestamp;
     for (Relationship r : rels) {
       timestamp = (long) (r.getProperty("timestamp"));
-      timestampedAttrs.add(new TimestampedAttr(timestamp, (String) r.getProperty("attr", "")));
+      timestampedAttrs.add(new BenchUtils.TimestampedAttr(timestamp, (String) r.getProperty("attr", "")));
     }
 
     List<String> attrs = new ArrayList<>(timestampedAttrs.size());
     Collections.sort(timestampedAttrs);
 
-    for (TimestampedAttr timestampedAttr : timestampedAttrs) {
+    for (BenchUtils.TimestampedAttr timestampedAttr : timestampedAttrs) {
       attrs.add(timestampedAttr.attr);
     }
     return attrs;
@@ -362,15 +361,15 @@ public class BenchNeighborAtype {
         // warmup
         int i = 0, queryIdx = 0, warmupSize = warmupIds.size();
         long warmupStart = System.nanoTime();
-        while (System.nanoTime() - warmupStart < WARMUP_TIME) {
+        while (System.nanoTime() - warmupStart < BenchConstants.WARMUP_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(warmupSize);
-          getNeighborsSorted(graphDb, modGet(warmupIds, queryIdx),
-            atypeMap[modGet(warmupAtypes, queryIdx).intValue()]);
+          getNeighborsSorted(graphDb, BenchUtils.modGet(warmupIds, queryIdx),
+            atypeMap[BenchUtils.modGet(warmupAtypes, queryIdx).intValue()]);
           ++i;
         }
 
@@ -380,15 +379,15 @@ public class BenchNeighborAtype {
         int querySize = queryIds.size();
         List<Long> neighbors;
         long start = System.nanoTime();
-        while (System.nanoTime() - start < MEASURE_TIME) {
+        while (System.nanoTime() - start < BenchConstants.MEASURE_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(querySize);
-          neighbors = getNeighborsSorted(graphDb, modGet(queryIds, queryIdx),
-            atypeMap[modGet(queryAtypes, queryIdx).intValue()]);
+          neighbors = getNeighborsSorted(graphDb, BenchUtils.modGet(queryIds, queryIdx),
+            atypeMap[BenchUtils.modGet(queryAtypes, queryIdx).intValue()]);
           edges += neighbors.size();
           ++i;
         }
@@ -399,9 +398,9 @@ public class BenchNeighborAtype {
 
         // cooldown
         long cooldownStart = System.nanoTime();
-        while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
-          getNeighborsSorted(graphDb, modGet(warmupIds, i),
-            atypeMap[modGet(warmupAtypes, i).intValue()]);
+        while (System.nanoTime() - cooldownStart < BenchConstants.COOLDOWN_TIME) {
+          getNeighborsSorted(graphDb, BenchUtils.modGet(warmupIds, i),
+            atypeMap[BenchUtils.modGet(warmupAtypes, i).intValue()]);
           ++i;
         }
         out.printf("%.1f %.1f\n", queryThput, edgesThput);
@@ -442,15 +441,15 @@ public class BenchNeighborAtype {
         // warmup
         int i = 0, queryIdx = 0, warmupSize = warmupIds.size();
         long warmupStart = System.nanoTime();
-        while (System.nanoTime() - warmupStart < WARMUP_TIME) {
+        while (System.nanoTime() - warmupStart < BenchConstants.WARMUP_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(warmupSize);
-          getEdgeAttrs(graphDb, modGet(warmupIds, queryIdx),
-            atypeMap[modGet(warmupAtypes, queryIdx).intValue()]);
+          getEdgeAttrs(graphDb, BenchUtils.modGet(warmupIds, queryIdx),
+            atypeMap[BenchUtils.modGet(warmupAtypes, queryIdx).intValue()]);
           ++i;
         }
 
@@ -460,15 +459,15 @@ public class BenchNeighborAtype {
         int querySize = queryIds.size();
         List<String> edgeAttrs;
         long start = System.nanoTime();
-        while (System.nanoTime() - start < MEASURE_TIME) {
+        while (System.nanoTime() - start < BenchConstants.MEASURE_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(querySize);
-          edgeAttrs = getEdgeAttrs(graphDb, modGet(queryIds, queryIdx),
-            atypeMap[modGet(queryAtypes, queryIdx).intValue()]);
+          edgeAttrs = getEdgeAttrs(graphDb, BenchUtils.modGet(queryIds, queryIdx),
+            atypeMap[BenchUtils.modGet(queryAtypes, queryIdx).intValue()]);
           edges += edgeAttrs.size();
           ++i;
         }
@@ -479,8 +478,9 @@ public class BenchNeighborAtype {
 
         // cooldown
         long cooldownStart = System.nanoTime();
-        while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
-          getEdgeAttrs(graphDb, modGet(queryIds, i), atypeMap[modGet(queryAtypes, i).intValue()]);
+        while (System.nanoTime() - cooldownStart < BenchConstants.COOLDOWN_TIME) {
+          getEdgeAttrs(graphDb, BenchUtils.modGet(queryIds, i), atypeMap[BenchUtils
+            .modGet(queryAtypes, i).intValue()]);
           ++i;
         }
         out.printf("%.1f %.1f\n", queryThput, edgesThput);

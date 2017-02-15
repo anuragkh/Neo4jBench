@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench;
+package edu.berkeley.cs.neo4jbench;
 
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.*;
+import static edu.berkeley.cs.neo4jbench.BenchConstants.*;
+import static edu.berkeley.cs.neo4jbench.BenchUtils.*;
 
 public class MixBench {
   static final Label label = DynamicLabel.label("Node");

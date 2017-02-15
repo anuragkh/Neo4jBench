@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench;
+package edu.berkeley.cs.neo4jbench;
 
 public class BenchConstants {
 

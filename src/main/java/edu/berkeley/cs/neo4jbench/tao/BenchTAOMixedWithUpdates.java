@@ -1,6 +1,6 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -11,8 +11,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
 
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.modGet;
+import static edu.berkeley.cs.neo4jbench.BenchConstants.*;
+import static edu.berkeley.cs.neo4jbench.BenchUtils.modGet;
 
 public class BenchTAOMixedWithUpdates {
 

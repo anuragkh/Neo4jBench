@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.path;
+package edu.berkeley.cs.neo4jbench.path;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;

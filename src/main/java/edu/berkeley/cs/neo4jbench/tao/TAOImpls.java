@@ -1,6 +1,6 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.graphdb.index.RelationshipIndex;

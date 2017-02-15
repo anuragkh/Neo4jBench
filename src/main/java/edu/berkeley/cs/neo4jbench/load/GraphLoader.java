@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.load;
+package edu.berkeley.cs.neo4jbench.load;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;

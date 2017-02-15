@@ -1,6 +1,7 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.tao;
+package edu.berkeley.cs.neo4jbench.tao;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchConstants;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -12,9 +13,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.modGet;
 
 public class BenchTAOObjGet {
 
@@ -79,7 +77,7 @@ public class BenchTAOObjGet {
           tx.close();
           tx = db.beginTx();
         }
-        taoImpls.objGet(db, modGet(warmupObjGetIds, i));
+        taoImpls.objGet(db, BenchUtils.modGet(warmupObjGetIds, i));
       }
 
       System.out.println("Measuring for " + numMeasureQueries + " queries");
@@ -90,7 +88,7 @@ public class BenchTAOObjGet {
           tx = db.beginTx();
         }
         long queryStart = System.nanoTime();
-        List<String> attrs = taoImpls.objGet(db, modGet(objGetIds, i));
+        List<String> attrs = taoImpls.objGet(db, BenchUtils.modGet(objGetIds, i));
         long queryEnd = System.nanoTime();
         double microsecs = (queryEnd - queryStart) / ((double) 1000);
         out.println(attrs.size() + "," + microsecs);
@@ -194,14 +192,14 @@ public class BenchTAOObjGet {
         // warmup
         int i = 0, queryIdx = 0;
         long warmupStart = System.nanoTime();
-        while (System.nanoTime() - warmupStart < WARMUP_TIME) {
+        while (System.nanoTime() - warmupStart < BenchConstants.WARMUP_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(warmupNodes.size());
-          taoImpls.objGet(graphDb, modGet(warmupNodes, queryIdx));
+          taoImpls.objGet(graphDb, BenchUtils.modGet(warmupNodes, queryIdx));
           ++i;
         }
 
@@ -210,14 +208,14 @@ public class BenchTAOObjGet {
         long edges = 0;
         int querySize = nodes.size();
         long start = System.nanoTime();
-        while (System.nanoTime() - start < MEASURE_TIME) {
+        while (System.nanoTime() - start < BenchConstants.MEASURE_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(querySize);
-          List<String> attrs = taoImpls.objGet(graphDb, modGet(nodes, queryIdx));
+          List<String> attrs = taoImpls.objGet(graphDb, BenchUtils.modGet(nodes, queryIdx));
           edges += attrs.size();
           ++i;
         }
@@ -228,9 +226,9 @@ public class BenchTAOObjGet {
 
         // cooldown
         long cooldownStart = System.nanoTime();
-        while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
+        while (System.nanoTime() - cooldownStart < BenchConstants.COOLDOWN_TIME) {
           queryIdx = rand.nextInt(querySize);
-          taoImpls.objGet(graphDb, modGet(nodes, queryIdx));
+          taoImpls.objGet(graphDb, BenchUtils.modGet(nodes, queryIdx));
           ++i;
         }
         out.printf("%.1f %.1f\n", queryThput, edgesThput);

@@ -1,4 +1,4 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench;
+package edu.berkeley.cs.neo4jbench;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils.*;
 
 public class BenchNeighbor {
 
@@ -73,7 +70,7 @@ public class BenchNeighbor {
       }
 
       if (tuned) {
-        fullWarmup(graphDb);
+        BenchUtils.fullWarmup(graphDb);
       }
 
       System.out.println("Warming up for " + WARMUP_N + " queries");
@@ -83,7 +80,7 @@ public class BenchNeighbor {
           tx.close();
           tx = graphDb.beginTx();
         }
-        List<Long> neighbors = getNeighbors(graphDb, modGet(warmupQueries, i));
+        List<Long> neighbors = getNeighbors(graphDb, BenchUtils.modGet(warmupQueries, i));
       }
 
       System.out.println("Measuring for " + MEASURE_N + " queries");
@@ -95,7 +92,7 @@ public class BenchNeighbor {
           tx = graphDb.beginTx();
         }
         long queryStart = System.nanoTime();
-        List<Long> neighbors = getNeighbors(graphDb, modGet(queries, i));
+        List<Long> neighbors = getNeighbors(graphDb, BenchUtils.modGet(queries, i));
         long queryEnd = System.nanoTime();
         double microsecs = (queryEnd - queryStart) / ((double) 1000);
         out.println(neighbors.size() + "," + microsecs);
@@ -103,7 +100,7 @@ public class BenchNeighbor {
         if (resOut != null) {
           // correctness validation
           Collections.sort(neighbors);
-          String header = "node id: " + modGet(queries, i);
+          String header = "node id: " + BenchUtils.modGet(queries, i);
           BenchUtils.print(header, neighbors, resOut);
         }
       }
@@ -117,7 +114,7 @@ public class BenchNeighbor {
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      printMemoryFootprint();
+      BenchUtils.printMemoryFootprint();
       System.out.println("Shutting down database ...");
       graphDb.shutdown();
     }
@@ -209,14 +206,14 @@ public class BenchNeighbor {
         // warmup
         int i = 0, queryIdx = 0;
         long warmupStart = System.nanoTime();
-        while (System.nanoTime() - warmupStart < WARMUP_TIME) {
+        while (System.nanoTime() - warmupStart < BenchConstants.WARMUP_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(warmupQueries.size());
-          getNeighbors(graphDb, modGet(warmupQueries, queryIdx));
+          getNeighbors(graphDb, BenchUtils.modGet(warmupQueries, queryIdx));
           ++i;
         }
 
@@ -226,14 +223,14 @@ public class BenchNeighbor {
         int querySize = queries.size();
         List<Long> neighbors;
         long start = System.nanoTime();
-        while (System.nanoTime() - start < MEASURE_TIME) {
+        while (System.nanoTime() - start < BenchConstants.MEASURE_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
             tx = graphDb.beginTx();
           }
           queryIdx = rand.nextInt(querySize);
-          neighbors = getNeighbors(graphDb, modGet(queries, queryIdx));
+          neighbors = getNeighbors(graphDb, BenchUtils.modGet(queries, queryIdx));
           edges += neighbors.size();
           ++i;
         }
@@ -244,8 +241,8 @@ public class BenchNeighbor {
 
         // cooldown
         long cooldownStart = System.nanoTime();
-        while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
-          getNeighbors(graphDb, modGet(warmupQueries, i));
+        while (System.nanoTime() - cooldownStart < BenchConstants.COOLDOWN_TIME) {
+          getNeighbors(graphDb, BenchUtils.modGet(warmupQueries, i));
           ++i;
         }
         out.printf("%.1f %.1f\n", queryThput, edgesThput);

@@ -1,6 +1,7 @@
-package edu.berkeley.cs.succinctgraph.neo4jbench.path;
+package edu.berkeley.cs.neo4jbench.path;
 
-import edu.berkeley.cs.succinctgraph.neo4jbench.BenchUtils;
+import edu.berkeley.cs.neo4jbench.BenchConstants;
+import edu.berkeley.cs.neo4jbench.BenchUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -12,8 +13,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static edu.berkeley.cs.succinctgraph.neo4jbench.BenchConstants.*;
 
 public class PathBench {
   static String outputFile;
@@ -179,7 +178,7 @@ public class PathBench {
         int i = 0;
         int queryCount = queries.size();
         long warmupStart = System.nanoTime();
-        while (System.nanoTime() - warmupStart < WARMUP_TIME) {
+        while (System.nanoTime() - warmupStart < BenchConstants.WARMUP_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
@@ -193,7 +192,7 @@ public class PathBench {
         i = 0;
         long paths = 0;
         long start = System.nanoTime();
-        while (System.nanoTime() - start < MEASURE_TIME) {
+        while (System.nanoTime() - start < BenchConstants.MEASURE_TIME) {
           if (i % 10000 == 0) {
             tx.success();
             tx.close();
@@ -209,7 +208,7 @@ public class PathBench {
 
         // cooldown
         long cooldownStart = System.nanoTime();
-        while (System.nanoTime() - cooldownStart < COOLDOWN_TIME) {
+        while (System.nanoTime() - cooldownStart < BenchConstants.COOLDOWN_TIME) {
           PathQuery.run(graphDb, queries.get(rand.nextInt() % queryCount));
           ++i;
         }
