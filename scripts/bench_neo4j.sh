@@ -5,7 +5,7 @@ SCRIPT_DIR=$(dirname $0)
 OUTPUT_DIR=${SCRIPT_DIR}/../results
 mkdir -p $OUTPUT_DIR
 source ${SCRIPT_DIR}/config.sh
-classpath=${SCRIPT_DIR}/../target/scala-2.10/succinctgraph-assembly-0.1.0-SNAPSHOT.jar
+classpath=${SCRIPT_DIR}/../target/scala-2.10/assembly-0.1.0-SNAPSHOT.jar
 
 TOTAL_MEM=249856 # r3.8xlarge
 AVAIL_MEM=$(( $TOTAL_MEM - 512 )) # reserve 512m for OS
@@ -87,7 +87,7 @@ for tuned in true false; do
           # find ${NEO4J_DIR}/${DATASET}/schema/index -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNode \
+            edu.berkeley.cs.neo4jbench.BenchNode \
             node-node-latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/node_warmup_${num_nodes}.txt \
@@ -105,7 +105,7 @@ for tuned in true false; do
           # find ${NEO4J_DIR}/${DATASET}/schema/index -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNode \
+            edu.berkeley.cs.neo4jbench.BenchNode \
             node-node-throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/node_warmup_${num_nodes}.txt \
@@ -127,7 +127,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.NeighborNodeBench \
+            edu.berkeley.cs.neo4jbench.NeighborNodeBench \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighbor_node_warmup_${num_nodes}.txt \
@@ -144,7 +144,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.NeighborNodeBench \
+            edu.berkeley.cs.neo4jbench.NeighborNodeBench \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighbor_node_warmup_${num_nodes}.txt \
@@ -166,7 +166,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNeighbor \
+            edu.berkeley.cs.neo4jbench.BenchNeighbor \
             neighbor-latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighbor_warmup_${num_nodes}.txt \
@@ -183,7 +183,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNeighbor \
+            edu.berkeley.cs.neo4jbench.BenchNeighbor \
             neighbor-throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighbor_warmup_${num_nodes}.txt \
@@ -205,7 +205,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNeighborAtype \
+            edu.berkeley.cs.neo4jbench.BenchNeighborAtype \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighborAtype_warmup_${num_nodes}.txt \
@@ -222,7 +222,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNeighborAtype \
+            edu.berkeley.cs.neo4jbench.BenchNeighborAtype \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighborAtype_warmup_${num_nodes}.txt \
@@ -244,7 +244,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNeighborAtype \
+            edu.berkeley.cs.neo4jbench.BenchNeighborAtype \
             edgeAttrs-latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighborAtype_warmup_${num_nodes}.txt \
@@ -266,7 +266,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.BenchNeighborAtype \
+            edu.berkeley.cs.neo4jbench.BenchNeighborAtype \
             edgeAttrs-throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighborAtype_warmup_${num_nodes}.txt \
@@ -289,7 +289,7 @@ for tuned in true false; do
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           # find ${NEO4J_DIR}/${DATASET}/schema/index -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.MixBench latency \
+            edu.berkeley.cs.neo4jbench.MixBench latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighbor_warmup_${num_nodes}.txt \
             ${QUERY_DIR}/neighbor_query_${num_nodes}.txt \
@@ -316,7 +316,7 @@ for tuned in true false; do
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           # find ${NEO4J_DIR}/${DATASET}/schema/index -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.MixBench \
+            edu.berkeley.cs.neo4jbench.MixBench \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/neighbor_warmup_${num_nodes}.txt \
@@ -348,7 +348,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocRange \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocRange \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocRange_warmup.txt \
@@ -365,7 +365,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocRange \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocRange \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocRange_warmup.txt \
@@ -387,7 +387,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOObjGet \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOObjGet \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/objGet_warmup.txt \
@@ -404,7 +404,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOObjGet \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOObjGet \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/objGet_warmup.txt \
@@ -426,7 +426,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocGet \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocGet \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocGet_warmup.txt \
@@ -443,7 +443,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocGet \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocGet \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocGet_warmup.txt \
@@ -465,7 +465,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocCount \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocCount \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocCount_warmup.txt \
@@ -482,7 +482,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocCount \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocCount \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocCount_warmup.txt \
@@ -504,7 +504,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocTimeRange \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocTimeRange \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocTimeRange_warmup.txt \
@@ -521,7 +521,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOAssocTimeRange \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOAssocTimeRange \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocTimeRange_warmup.txt \
@@ -543,7 +543,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOMixed \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOMixed \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocRange_warmup.txt \
@@ -573,7 +573,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOMixed \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOMixed \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocRange_warmup.txt \
@@ -604,7 +604,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOMixedWithUpdates \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOMixedWithUpdates \
             latency \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocRange_warmup.txt \
@@ -636,7 +636,7 @@ for tuned in true false; do
           # sleep 2 && sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
           # find ${NEO4J_DIR}/${DATASET}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
           java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${JVM_HEAP}m -cp ${classpath} \
-            edu.berkeley.cs.succinctgraph.neo4jbench.tao.BenchTAOMixedWithUpdates \
+            edu.berkeley.cs.neo4jbench.tao.BenchTAOMixedWithUpdates \
             throughput \
             ${NEO4J_DIR}/${DATASET} \
             ${QUERY_DIR}/assocRange_warmup.txt \

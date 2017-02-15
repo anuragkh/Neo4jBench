@@ -40,7 +40,7 @@ for tuned in true false; do
       find ${neo4j_dir}/${dataset}/ -name "*store.db*" -type f -exec dd if={} of=/dev/null bs=1M 2>/dev/null \;
     fi
     java -verbose:gc -server -XX:+UseConcMarkSweepGC -Xmx${jvm_heap} -cp ${classpath} \
-      edu.berkeley.cs.succinctgraph.neo4jbench.path.PathBench \
+      edu.berkeley.cs.neo4jbench.path.PathBench \
       ${bench_type} \
       ${neo4j_dir}/${dataset} \
       ${query_path} \
