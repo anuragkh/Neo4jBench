@@ -28,3 +28,9 @@ project/target
 
 # Maven tmps
 *.versionsBackup
+
+# Results
+results
+
+# Project Temps
+.tmp
