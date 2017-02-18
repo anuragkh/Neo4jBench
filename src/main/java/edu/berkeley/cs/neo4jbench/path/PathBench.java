@@ -79,8 +79,7 @@ public class PathBench {
           tx = db.beginTx();
         }
         String query = queries.get(i);
-        if (!query.contains("*"))
-          PathQuery.run(db, query);
+        PathQuery.run(db, query);
       }
 
       System.out.println("Measuring for " + numMeasureQueries + " queries");
@@ -91,10 +90,8 @@ public class PathBench {
           tx = db.beginTx();
         }
         String query = queries.get(i);
-        int count = -1;
         long queryStart = System.nanoTime();
-        if (!query.contains("*"))
-          count = PathQuery.run(db, query);
+        int count = PathQuery.run(db, query);
         long queryEnd = System.nanoTime();
         double microsecs = (queryEnd - queryStart) / ((double) 1000);
         out.println(count + "\t" + microsecs);
