@@ -90,6 +90,7 @@ public class PathBench {
           tx = db.beginTx();
         }
         String query = queries.get(i);
+        System.out.println("Executing query " + query);
         long queryStart = System.nanoTime();
         int count = PathQuery.run(db, query);
         long queryEnd = System.nanoTime();
