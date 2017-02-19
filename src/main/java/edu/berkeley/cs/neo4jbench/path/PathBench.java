@@ -63,5 +63,6 @@ public class PathBench {
     System.out.println("Finished executing query " + query);
     db.shutdown();
     System.out.println("Shutdown database");
+    System.exit(0);
   }
 }
