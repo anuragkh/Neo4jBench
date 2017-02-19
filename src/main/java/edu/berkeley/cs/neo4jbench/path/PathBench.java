@@ -64,8 +64,7 @@ public class PathBench {
     long queryEnd = System.nanoTime();
     double totTime = (queryEnd - queryStart) / ((double) 1000);
     out.println(count + "\t" + totTime);
-    tx.success();
-    tx.close();
     out.close();
+    System.out.println("Finished executing query " + query);
   }
 }
