@@ -38,7 +38,6 @@ public class PathBench {
     db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(dbPath)
       .setConfig(GraphDatabaseSettings.cache_type, "none")
       .setConfig(GraphDatabaseSettings.pagecache_memory, pageCache).newGraphDatabase();
-    BenchUtils.registerShutdownHook(db);
     System.out.println("Done opening");
 
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
@@ -67,8 +66,12 @@ public class PathBench {
     int count = PathQuery.run(db, query);
     long queryEnd = System.nanoTime();
     double totTime = (queryEnd - queryStart) / ((double) 1000);
+    tx.success();
+    tx.close();
     out.println(count + "\t" + totTime);
     out.close();
     System.out.println("Finished executing query " + query);
+    db.shutdown();
+    System.out.println("Shutdown database");
   }
 }
