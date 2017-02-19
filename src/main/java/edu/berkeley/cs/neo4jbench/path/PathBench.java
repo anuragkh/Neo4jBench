@@ -41,12 +41,12 @@ public class PathBench {
     System.out.println("Done opening");
 
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
-    System.out.println("Testing query for timeout...");
+    System.out.println("Executing query " + query);
     Transaction tx = db.beginTx();
-    long start = System.currentTimeMillis();
-    int ret = PathQuery.runTimed(db, query);
-    long end = System.currentTimeMillis();
-    if (ret < 0) {
+    long start = System.nanoTime();
+    int count = PathQuery.runTimed(db, query);
+    long end = System.nanoTime();
+    if (count < 0) {
       tx.failure();
       tx.close();
 
@@ -57,17 +57,7 @@ public class PathBench {
     }
     tx.success();
     tx.close();
-
-    System.out.println("Timeout test success: " + ((end - start) / 1000) + "s");
-
-    System.out.println("Executing query " + query);
-    tx = db.beginTx();
-    long queryStart = System.nanoTime();
-    int count = PathQuery.run(db, query);
-    long queryEnd = System.nanoTime();
-    double totTime = (queryEnd - queryStart) / ((double) 1000);
-    tx.success();
-    tx.close();
+    double totTime = (end - start) / ((double) 1000);
     out.println(count + "\t" + totTime);
     out.close();
     System.out.println("Finished executing query " + query);
