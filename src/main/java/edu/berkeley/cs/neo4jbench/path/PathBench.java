@@ -53,7 +53,7 @@ public class PathBench {
       out.println("DNF");
       out.close();
       System.out.println("Query did not finish: " + query);
-      System.exit(-1);
+      System.exit(0);
     }
     tx.success();
     tx.close();
