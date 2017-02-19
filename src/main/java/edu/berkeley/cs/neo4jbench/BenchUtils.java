@@ -87,20 +87,19 @@ public class BenchUtils {
     //            "Full warmup done in " + (end - start) / 1e6 + " millis");
   }
 
-  public static void readPathQueries(String file, List<String> queries) {
+  public static String readPathQuery(String file) {
 
-    System.out.println("Reading path queries from file " + file);
+    System.out.println("Reading path query from file " + file);
 
+    String query = null;
     try {
       BufferedReader br = new BufferedReader(new FileReader(file));
-      String line = br.readLine();
-      while (line != null) {
-        queries.add(line);
-        line = br.readLine();
-      }
+      query = br.readLine();
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    return query;
   }
 
   public static void getNodeQueries(String file, List<Integer> indices1, List<Integer> indices2,
