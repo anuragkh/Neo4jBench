@@ -5,7 +5,6 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.traversal.Evaluators;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
 
@@ -29,12 +28,10 @@ public class TraversalQuery {
     Node startNode = db.getNodeById(startId);
     if (type == TraversalType.BFS) {
       search =
-        db.traversalDescription().breadthFirst().relationships(relationship[0], Direction.OUTGOING)
-          .evaluator(Evaluators.toDepth(5));
+        db.traversalDescription().breadthFirst().relationships(relationship[0], Direction.OUTGOING);
     } else if (type == TraversalType.DFS) {
       search =
-        db.traversalDescription().depthFirst().relationships(relationship[0], Direction.OUTGOING)
-          .evaluator(Evaluators.toDepth(5));
+        db.traversalDescription().depthFirst().relationships(relationship[0], Direction.OUTGOING);
     } else {
       throw new IllegalArgumentException("Unknown traversal type " + type.toString());
     }
