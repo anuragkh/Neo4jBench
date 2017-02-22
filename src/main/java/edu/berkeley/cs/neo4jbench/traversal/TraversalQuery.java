@@ -5,6 +5,7 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.traversal.Evaluators;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
 
@@ -24,14 +25,16 @@ public class TraversalQuery {
   }
 
   public static List<Long> traverse(GraphDatabaseService db, long startId, TraversalType type) {
-    TraversalDescription search = null;
+    TraversalDescription search;
     Node startNode = db.getNodeById(startId);
     if (type == TraversalType.BFS) {
-      search = db.traversalDescription().breadthFirst()
-        .relationships(relationship[0], Direction.OUTGOING);
+      search =
+        db.traversalDescription().breadthFirst().relationships(relationship[0], Direction.OUTGOING)
+          .evaluator(Evaluators.toDepth(3));
     } else if (type == TraversalType.DFS) {
-      search = db.traversalDescription().depthFirst()
-        .relationships(relationship[0], Direction.OUTGOING);
+      search =
+        db.traversalDescription().depthFirst().relationships(relationship[0], Direction.OUTGOING)
+          .evaluator(Evaluators.toDepth(3));
     } else {
       throw new IllegalArgumentException("Unknown traversal type " + type.toString());
     }
@@ -39,7 +42,7 @@ public class TraversalQuery {
     ArrayList<Long> results = new ArrayList<>();
     if (search != null) {
       Traverser traverser = search.traverse(startNode);
-      for (Node node: traverser.nodes()) {
+      for (Node node : traverser.nodes()) {
         results.add(node.getId());
       }
     }

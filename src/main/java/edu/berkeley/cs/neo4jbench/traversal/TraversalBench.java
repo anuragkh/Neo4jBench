@@ -56,7 +56,7 @@ public class TraversalBench {
 
     System.out.println("Finished warmup, running measurements...");
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
-    for (long i = 0; i < 10; i++) {
+    for (long i = 100; i < 110; i++) {
       Transaction tx = db.beginTx();
       long start = System.nanoTime();
       List<Long> nodeIds = TraversalQuery.traverse(db, i, TraversalType.fromString(traversalType));
