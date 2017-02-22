@@ -30,11 +30,11 @@ public class TraversalQuery {
     if (type == TraversalType.BFS) {
       search =
         db.traversalDescription().breadthFirst().relationships(relationship[0], Direction.OUTGOING)
-          .evaluator(Evaluators.toDepth(5));
+          .evaluator(Evaluators.toDepth(4));
     } else if (type == TraversalType.DFS) {
       search =
         db.traversalDescription().depthFirst().relationships(relationship[0], Direction.OUTGOING)
-          .evaluator(Evaluators.toDepth(5));
+          .evaluator(Evaluators.toDepth(4));
     } else {
       throw new IllegalArgumentException("Unknown traversal type " + type.toString());
     }
