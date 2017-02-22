@@ -46,7 +46,7 @@ public class TraversalBench {
 
 
     System.out.println("Running warmup...");
-    for (long i = 100; i < 110; i++) {
+    for (long i = 0; i < 10; i++) {
       Transaction tx = db.beginTx();
       TraversalQuery.traverse(db, i, TraversalType.fromString(traversalType));
       tx.success();
