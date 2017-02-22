@@ -21,8 +21,9 @@ public class TraversalBench {
   public static void main(String[] args) {
     dbPath = args[0];
     outputFile = args[1];
-    tuned = Boolean.valueOf(args[2]);
-    pageCache = args[3];
+    traversalType = args[2];
+    tuned = Boolean.valueOf(args[3]);
+    pageCache = args[4];
 
     try {
       benchLatency();
