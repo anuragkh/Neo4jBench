@@ -44,22 +44,18 @@ public class TraversalBench {
     }
     System.out.println("Done opening");
 
-    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 
     System.out.println("Running warmup...");
     for (long i = 100; i < 110; i++) {
       Transaction tx = db.beginTx();
-      long start = System.nanoTime();
-      List<Long> nodeIds = TraversalQuery.traverse(db, i, TraversalType.fromString(traversalType));
-      long end = System.nanoTime();
+      TraversalQuery.traverse(db, i, TraversalType.fromString(traversalType));
       tx.success();
       tx.close();
-      double totTime = (end - start) / ((double) 1000);
-      out.println(nodeIds.size() + "\t" + totTime);
-      out.close();
+
     }
 
     System.out.println("Finished warmup, running measurements...");
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
     for (long i = 0; i < 10; i++) {
       Transaction tx = db.beginTx();
       long start = System.nanoTime();
@@ -73,8 +69,9 @@ public class TraversalBench {
         "Finished " + traversalType + " on node " + i + " with " + nodeIds.size() + " results in "
           + totTime + "us");
       out.println(nodeIds.size() + "\t" + totTime);
-      out.close();
+
     }
+    out.close();
     System.out.println("Finished measurements.");
 
     db.shutdown();
